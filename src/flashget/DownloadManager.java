@@ -14,6 +14,7 @@ import javax.management.RuntimeErrorException;
 
 /**
  * Manage Thread and Downloading
+ * 
  * @author Tharit Pongsaneh
  *
  */
@@ -38,7 +39,6 @@ public class DownloadManager extends Observable {
 	private ThreadDownload download4;
 	private ThreadDownload download5;
 
-	
 	public String getFilename() {
 		return filename;
 	}
@@ -53,7 +53,9 @@ public class DownloadManager extends Observable {
 
 	/**
 	 * Set URL
-	 * @param urlName set URL and Important Info
+	 * 
+	 * @param urlName
+	 *            set URL and Important Info
 	 */
 	public void setURL(String urlName) {
 		this.urlName = urlName;
@@ -70,20 +72,22 @@ public class DownloadManager extends Observable {
 
 	/**
 	 * Downlaod File
+	 * 
 	 * @throws InterruptedException
 	 */
 	public void download() throws InterruptedException {
+		GroupThread = new ThreadGroup("DOWNLOAD THREAD");
 		download1 = new ThreadDownload(0, this.threadSize);
 		download2 = new ThreadDownload(this.threadSize, this.threadSize);
 		download3 = new ThreadDownload(this.threadSize * 2, this.threadSize);
 		download4 = new ThreadDownload(this.threadSize * 3, this.threadSize);
 		download5 = new ThreadDownload(this.threadSize * 4, this.threadSize);
 
-		thread1 = new Thread(GroupThread, download1);
-		thread2 = new Thread(GroupThread, download2);
-		thread3 = new Thread(GroupThread, download3);
-		thread4 = new Thread(GroupThread, download4);
-		thread5 = new Thread(GroupThread, download5);
+		thread1 = new Thread(GroupThread, download1, "Download 1");
+		thread2 = new Thread(GroupThread, download2, "Download 2");
+		thread3 = new Thread(GroupThread, download3, "Download 3");
+		thread4 = new Thread(GroupThread, download4, "Download 4");
+		thread5 = new Thread(GroupThread, download5, "Download 5");
 
 		thread1.start();
 		thread2.start();
@@ -99,17 +103,22 @@ public class DownloadManager extends Observable {
 
 	}
 
-	
 	public long getCurrentSize() {
 		return currentSize;
 	}
 
+	/**
+	 * Interrupt Thread and delete files
+	 */
 	public void cancle() {
 		GroupThread.interrupt();
+		File file = new File(filename);
+		file.delete();
 	}
-	
+
 	/**
 	 * Runnable Class For Thread
+	 * 
 	 * @author Tharit Pongsaneh
 	 *
 	 */
@@ -172,7 +181,7 @@ public class DownloadManager extends Observable {
 					currentSize += n;
 					setChanged();
 					notifyObservers();
-				} while (bytesRead < size || !Thread.interrupted());
+				} while (bytesRead < size && !Thread.interrupted());
 			} catch (IOException e) {
 				throw new RuntimeException();
 			} finally {

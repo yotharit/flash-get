@@ -80,64 +80,30 @@ public class DownloadManagerGui extends JFrame implements Observer {
 			textArea.setText("");
 		});
 		btnDownload.addActionListener(e -> {
-			//if (textField.getText() != null && !textField.getText().isEmpty()) {
-//			downloadButton.setEnabled(false);
-//			clearButton.setEnabled(false);
-//			resetProgressBar();
-//			downloadThread = new Thread(new Runnable() {
-//
-//				/**
-//				 * handle and perform an action when start perform.
-//				 */
-//				@Override
-//				public void run() {
-//					try {
-//						downloader.setURL(textField.getText());
-//						downloadProgress.setMaximum(downloader.getFileSize());
-//						downloadProgress.setStringPainted(true);
-//						downloadProgress.setForeground(Color.green);
-//						cancelButton.setEnabled(true);
-//						status.setForeground(Color.BLUE);
-//						status.setText("Downloading... ");
-//						downloader.download();
-//						status.setForeground(Color.green);
-//						status.setText("Finished");
-//					} catch (RuntimeException exception) {
-//						status.setForeground(Color.RED);
-//						status.setText("Wrong URL");
-//					} catch (InterruptedException exception) {
-//						status.setForeground(Color.RED);
-//						status.setText("Canceled");
-//					}
-//					downloadButton.setEnabled(true);
-//					clearButton.setEnabled(true);
-//					cancelButton.setEnabled(false);
-//				}
-//			});
-//			downloadThread.start();
-//		}
-			download = new Thread(new Runnable() {
-				public void run() {
-					
-				}
-			});
 			try {
 				textArea.setText("");
 				manager.setURL(textField.getText());
 				progressBar.setMaximum((int) manager.getFilesize());
 				progressBar.setStringPainted(true);
-				manager.download();
-				textArea.setText(manager.getUrlName() + "\n" + manager.getFilename() + "\n" + "FILESIZE"
-						+ manager.getFilesize() + "Byte");
 				btnCancle.setEnabled(true);
-
+				textArea.setText("FROM: "+manager.getUrlName() + "\n" +"FILE: " +manager.getFilename() + "\n" + "FILESIZE "
+						+ manager.getFilesize() + " Byte");
+				download = new Thread(new Runnable() {
+					public void run() {
+						try {
+							manager.download();
+						} catch (InterruptedException e) {
+							textArea.setText("Cancle Download");
+						}
+					}
+				});
+				download.start();
 			} catch (RuntimeException e1) {
 				textArea.setText("ERROR");
-			} catch (InterruptedException e1) {
-				textArea.setText("Download Interrupt");
 			}
 		});
 		btnCancle.addActionListener(e -> {
+			download.interrupt();
 			manager.cancle();
 		});
 
@@ -152,9 +118,8 @@ public class DownloadManagerGui extends JFrame implements Observer {
 
 	@Override
 	public void update(Observable o, Object arg) {
-		if (arg instanceof DownloadManager) {
-			progressBar.setValue((int) ((DownloadManager) arg).getCurrentSize());
+		if (o instanceof DownloadManager) {
+			progressBar.setValue((int) ((DownloadManager) o).getCurrentSize());
 		}
 	}
-
 }
