@@ -5,12 +5,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Observable;
 
-import javax.management.RuntimeErrorException;
 
 /**
  * Manage Thread and Downloading
@@ -20,6 +18,7 @@ import javax.management.RuntimeErrorException;
  */
 public class DownloadManager extends Observable {
 
+	//Attributes for this class
 	private final int BUFFERSIZE = 4096;
 	private String filename;
 	private String urlName;
@@ -39,20 +38,32 @@ public class DownloadManager extends Observable {
 	private ThreadDownload download4;
 	private ThreadDownload download5;
 
+	/**
+	 * GET filename
+	 * @return the name of downloaded file
+	 */
 	public String getFilename() {
 		return filename;
 	}
 
+	/**
+	 * Get Url
+	 * @return url that we download file from
+	 */
 	public String getUrlName() {
 		return urlName;
 	}
 
+	/**
+	 * Get file size
+	 * @return download size
+	 */
 	public long getFilesize() {
 		return filesize;
 	}
 
 	/**
-	 * Set URL
+	 * Set URL and information
 	 * 
 	 * @param urlName
 	 *            set URL and Important Info
@@ -71,7 +82,7 @@ public class DownloadManager extends Observable {
 	}
 
 	/**
-	 * Downlaod File
+	 * Downlaod File by thread
 	 * 
 	 * @throws InterruptedException
 	 */
@@ -127,7 +138,7 @@ public class DownloadManager extends Observable {
 		private int start;
 		private int size;
 		private InputStream instream;
-
+		private RandomAccessFile writer;
 		public ThreadDownload(int start, int size) {
 			this.start = start;
 			this.size = size;
@@ -157,7 +168,7 @@ public class DownloadManager extends Observable {
 		 */
 		private void write() {
 			File file = new File(filename);
-			RandomAccessFile writer = null;
+			writer = null;
 			try {
 				writer = new RandomAccessFile(file, "rwd");
 			} catch (FileNotFoundException e) {
@@ -194,11 +205,20 @@ public class DownloadManager extends Observable {
 				}
 			}
 		}
-
+		private void close(){
+			try {
+				instream.close();
+				writer.close();
+			} catch (IOException e) {
+				throw new RuntimeException();
+			}
+		}
+		
 		@Override
 		public void run() {
 			setup();
 			write();
+			close();
 		}
 	}
 

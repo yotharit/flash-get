@@ -4,22 +4,16 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.JTextField;
 import javax.swing.JLabel;
-import javax.swing.BoxLayout;
 import javax.swing.SwingConstants;
 
-import com.sun.prism.paint.Color;
 
 import javax.swing.JButton;
 import javax.swing.JTextArea;
-import javax.swing.JTextPane;
-import javax.swing.JScrollPane;
 import javax.swing.JProgressBar;
 
 /**
@@ -28,12 +22,19 @@ import javax.swing.JProgressBar;
  *
  */
 public class DownloadManagerGui extends JFrame implements Observer {
+	
+	/**
+	 * GUI Component
+	 */
 	private DownloadManager manager;
 	private JTextField textField;
 	private JProgressBar progressBar;
 	private JTextArea textArea;
 	private Thread download;
 
+	/**
+	 * Constructor for GUI
+	 */
 	public DownloadManagerGui() {
 		manager = new DownloadManager();
 		manager.addObserver(this);
@@ -74,11 +75,13 @@ public class DownloadManagerGui extends JFrame implements Observer {
 		textArea = new JTextArea();
 		textArea.setAutoscrolls(true);
 		panel_2.add(textArea, BorderLayout.CENTER);
+		//clear button press action
 		btnClear.addActionListener(e -> {
 			textField.setText("");
 			progressBar.setValue(0);
 			textArea.setText("");
 		});
+		//download button press action
 		btnDownload.addActionListener(e -> {
 			try {
 				textArea.setText("");
@@ -102,9 +105,11 @@ public class DownloadManagerGui extends JFrame implements Observer {
 				textArea.setText("ERROR");
 			}
 		});
+		//cancle action
 		btnCancle.addActionListener(e -> {
 			download.interrupt();
 			manager.cancle();
+			btnCancle.setEnabled(false);
 		});
 
 	}
