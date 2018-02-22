@@ -124,7 +124,8 @@ public class DownloadManagerGui extends JFrame implements Observer {
 	@Override
 	public void update(Observable o, Object arg) {
 		if (o instanceof DownloadManager) {
-			progressBar.setValue((int) ((DownloadManager) o).getCurrentSize());
+			DownloadManager download = (DownloadManager) o;
+			progressBar.setValue((int)download.getCurrentSize());
 		}
 	}
 }

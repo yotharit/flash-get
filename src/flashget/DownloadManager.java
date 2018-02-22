@@ -111,7 +111,7 @@ public class DownloadManager extends Observable {
 		thread3.join();
 		thread4.join();
 		thread5.join();
-
+		
 	}
 
 	public long getCurrentSize() {
